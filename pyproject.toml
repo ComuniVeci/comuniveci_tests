@@ -8,7 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "requests (>=2.32.4,<3.0.0)"
+    "requests (>=2.32.4,<3.0.0)",
+    "pymongo (>=4.13.2,<5.0.0)"
 ]
 
 [tool.poetry]
@@ -16,6 +17,8 @@ dependencies = [
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
 python-dotenv = "^1.1.1"
+faker = "^37.4.0"
+pytest-json-report = "^1.5.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
