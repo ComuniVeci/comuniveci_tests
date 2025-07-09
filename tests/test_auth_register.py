@@ -11,9 +11,9 @@ def test_register_user_success(client, faker):
 
     assert response.status_code == 201
     response_json = response.json()
-    assert "user_id" in response_json
-    assert response_json["username"] == user_data["username"]
-    assert response_json["email"] == user_data["email"]
+    assert "access_token" in response_json
+    assert "token_type" in response_json
+    assert "message" in response_json
 
 def test_register_user_duplicate_email(client, faker):
     common_email = faker.email()

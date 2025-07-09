@@ -19,6 +19,9 @@ def client():
 
         def post(self, endpoint, json):
             return requests.post(f"{self.base_url}{endpoint}", json=json)
+        
+        def get(self, endpoint, headers=None):
+            return requests.get(f"{self.base_url}{endpoint}", headers=headers)
 
     return TestClient("http://localhost:8002")  # Cambia puerto si tu auth-service usa otro
 
