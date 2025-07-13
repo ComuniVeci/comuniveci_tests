@@ -1,18 +1,31 @@
 # 🧪 ComuniVeci - Pruebas de Integración
 
-Este repositorio contiene las pruebas de integración para el sistema ComuniVeci, específicamente para el servicio de autenticación de usuarios (`auth-service`).
+Este repositorio contiene las pruebas automáticas para el sistema ComuniVeci, incluyendo:
+
+    - 🔐 Servicio de autenticación (auth-service)
+
+    - 🌐 Interfaz web (frontend)
+
+Se utilizan herramientas como Pytest, Selenium y Faker para validar tanto el backend como flujos de usuario en el navegador.
 
 ## 📁 Estructura del proyecto
 
 ```bash
 comuniveci_tests/
-├── conftest.py # Configuración global de pruebas (fixtures)
-├── tests/
-│ └── test_auth_register.py # Pruebas para el registro de usuarios
-├── template.html # Plantilla HTML para el reporte en PDF
-├── generate_report.py # Script para generar reporte en PDF
-├── .env # Variables de entorno para pruebas (local)
-└── report.json # Archivo JSON generado por pytest con resultados
+├── conftest.py                # Configuración global y fixtures (incluye navegador y seguimiento de usuarios)
+├── tests_backend/
+│   ├── test_auth_login.py     # Pruebas de login
+│   ├── test_auth_me.py        # Pruebas del endpoint /me
+│   └── test_auth_register.py  # Pruebas de registro
+├── tests_frontend/
+│   ├── test_login_frontend.py     # Pruebas E2E del login
+│   ├── test_register_frontend.py  # Pruebas E2E del registro
+│   └── test_admin_frontend.py     # Pruebas del panel de administración
+├── generate_report.py         # Script para generar reporte en PDF
+├── template.html              # Plantilla HTML para reporte PDF
+├── .env                       # Variables de entorno
+├── report.json                # Reporte en JSON generado por pytest
+└── TestReport.pdf             # Reporte PDF final
 ```
 
 
@@ -20,6 +33,8 @@ comuniveci_tests/
 
 - Python ≥ 3.10
 - MongoDB en ejecución local
+- Google Chrome (para Selenium)
+- ChromeDriver compatible
 - Poetry instalado: `pip install poetry`
 - Dependencias instaladas con Poetry
 
@@ -42,20 +57,36 @@ poetry install
 
 ```bash
 MONGO_URI=mongodb://localhost:27017/
-DB_NAME_TEST=communiveci_test
+DB_NAME=nombre_base_de_datos
 ```
 
-Asegúrate de que MongoDB esté en ejecución local y que la base de datos communiveci_test esté vacía o sea temporal.
+ℹ️ Ahora las pruebas se ejecutan sobre la base de datos principal communiveci pero eliminan automáticamente los usuarios creados durante las pruebas.
 
 ## ✅ Ejecutar pruebas
 
-Puedes ejecutar todas las pruebas de integración usando:
+Ejecuta todas las pruebas:
 
 ```bash
-poetry run pytest -v --json-report --json-report-file=report.json
+poetry run pytest --json-report --json-report-file=report.json
 ```
 
-Esto ejecutará las pruebas y generará un reporte en formato JSON.
+También puedes ejecutar pruebas por grupo:
+
+- Solo backend:
+
+```bash
+poetry run pytest -m backend
+```
+
+- Solo frontend:
+
+```bash
+poetry run pytest -m frontend
+```
+
+## 🧼 Limpieza de datos
+
+Los usuarios creados por las pruebas se rastrean dinámicamente y se eliminan automáticamente al finalizar cada prueba, incluso en la base de datos principal.
 
 ## 🧾 Generar reporte PDF
 
@@ -67,7 +98,7 @@ poetry run python generate_report.py
 
 Esto creará un archivo llamado TestReport.pdf en la raíz del proyecto.
 
-📌 El PDF incluye:
+📌 El archivo TestReport.pdf incluirá:
 
 - Resultados por prueba
 
@@ -75,21 +106,13 @@ Esto creará un archivo llamado TestReport.pdf en la raíz del proyecto.
 
 - Porcentaje de cobertura
 
-- Logo de la universidad
+- Fecha y hora de ejecución
 
-- Fecha de generación
+- Agrupación por tipo de prueba
 
-## 🏁 Ejemplo de prueba
+## ✅ Funcionalidades cubiertas
 
-Archivo de prueba incluido:
-
-- test_auth_register.py: contiene tres casos de prueba:
-
-    - Registro exitoso
-
-    - Registro con correo duplicado
-
-    - Registro con email inválido
-
-## 🧼 Limpieza de datos
-Durante las pruebas, los usuarios creados se almacenan temporalmente en la base de datos communiveci_test. Se eliminan automáticamente antes de cada prueba para evitar interferencias.
+✔️ Registro, login y validación de sesión
+✔️ Pruebas visuales del flujo de autenticación
+✔️ Acceso al panel de administración y sus secciones
+✔️ Verificación de usuarios, estadísticas, métricas y cierre de sesión
