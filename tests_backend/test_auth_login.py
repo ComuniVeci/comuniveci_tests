@@ -1,6 +1,6 @@
 import pytest
 
-def register_user_for_login(client, faker):
+def register_user_for_login(client, faker, track_created_user):
     user_data = {
         "username": faker.user_name(),
         "email": faker.email(),
@@ -8,10 +8,13 @@ def register_user_for_login(client, faker):
     }
     res = client.post("/api/auth/register", json=user_data)
     assert res.status_code == 201
+    # Registrar para eliminación
+    track_created_user(user_data["email"])
     return user_data
 
-def test_login_success(client, faker):
-    user_data = register_user_for_login(client, faker)
+@pytest.mark.backend
+def test_login_success(client, faker, track_created_user):
+    user_data = register_user_for_login(client, faker, track_created_user)
     login_payload = {
         "email": user_data["email"],
         "password": user_data["password"]
@@ -22,8 +25,9 @@ def test_login_success(client, faker):
     assert "access_token" in body
     assert body["token_type"] == "bearer"
 
-def test_login_wrong_password(client, faker):
-    user_data = register_user_for_login(client, faker)
+@pytest.mark.backend
+def test_login_wrong_password(client, faker, track_created_user):
+    user_data = register_user_for_login(client, faker, track_created_user)
     login_payload = {
         "email": user_data["email"],
         "password": "WrongPassword"
@@ -32,6 +36,7 @@ def test_login_wrong_password(client, faker):
     assert res.status_code == 401
     assert res.json()["detail"] == "Credenciales inválidas"
 
+@pytest.mark.backend
 def test_login_nonexistent_email(client):
     login_payload = {
         "email": "nonexistent@example.com",

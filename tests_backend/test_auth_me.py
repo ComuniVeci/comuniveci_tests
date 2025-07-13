@@ -1,6 +1,7 @@
 import pytest
 
-def test_me_success(client, faker):
+@pytest.mark.backend
+def test_me_success(client, faker, track_created_user):
     # Registro de usuario
     user_data = {
         "username": faker.user_name(),
@@ -29,13 +30,18 @@ def test_me_success(client, faker):
     assert "id" in user
     assert "is_admin" in user
 
+    # Registrar para limpieza solo si se creó correctamente
+    track_created_user(user_data["email"])
 
+
+@pytest.mark.backend
 def test_me_without_token(client):
     me_resp = client.get("/api/auth/me")
     assert me_resp.status_code == 401
     assert me_resp.json()["detail"] == "Not authenticated"
 
 
+@pytest.mark.backend
 def test_me_invalid_token(client):
     headers = {"Authorization": "Bearer invalid.token.value"}
     me_resp = client.get("/api/auth/me", headers=headers)

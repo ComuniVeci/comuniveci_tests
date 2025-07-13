@@ -1,6 +1,7 @@
 import pytest
 
-def test_register_user_success(client, faker):
+@pytest.mark.backend
+def test_register_user_success(client, faker, track_created_user):
     user_data = {
         "username": faker.user_name(),
         "email": faker.email(),
@@ -15,7 +16,11 @@ def test_register_user_success(client, faker):
     assert "token_type" in response_json
     assert "message" in response_json
 
-def test_register_user_duplicate_email(client, faker):
+    # Registrar para limpieza solo si se creó correctamente
+    track_created_user(user_data["email"])
+
+@pytest.mark.backend
+def test_register_user_duplicate_email(client, faker, track_created_user):
     common_email = faker.email()
 
     # Primer registro exitoso
@@ -27,6 +32,9 @@ def test_register_user_duplicate_email(client, faker):
     res1 = client.post("/api/auth/register", json=user_data_1)
     assert res1.status_code == 201
 
+    # Registrar para limpieza
+    track_created_user(common_email)
+
     # Segundo intento con mismo email
     user_data_2 = {
         "username": faker.user_name(),
@@ -37,6 +45,7 @@ def test_register_user_duplicate_email(client, faker):
     assert res2.status_code == 400
     assert "detail" in res2.json()
 
+@pytest.mark.backend
 def test_register_user_invalid_email(client):
     user_data = {
         "username": "invaliduser",
